@@ -1,0 +1,43 @@
+.participant {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    border-radius: 5px;
+    min-height:  200px;
+}
+
+.video {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+
+}
+
+.avatar{
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    color: #fff;
+    background: orange;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.muted{
+    color: #fff;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+}
+
+.name{
+    color: #fff;
+    left: 20px;
+    bottom: 10px;
+    position: absolute;
+}

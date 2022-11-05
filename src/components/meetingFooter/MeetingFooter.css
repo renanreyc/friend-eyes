@@ -1,0 +1,19 @@
+.meetingFooter{
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #202124;
+}
+
+.meetingIcons{
+    color: white;
+    background: #3c4043;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    margin: 10px;
+}

@@ -3,6 +3,7 @@ import './App.css';
 import { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { setUser, addParticipant, removeParticipant} from './store/actioncreator';
+import { MainScreen } from './components/mainScreen/MainScreen.component';
 
 function App(props) {
   const participantRef = dbRef.child("participants");
@@ -51,8 +52,7 @@ function App(props) {
   }, [props.user]);
   return (
     <div className="App">
-      Current user: { JSON.stringify(props.user)} <br/>
-      Participants: { JSON.stringify(props.participants) }
+      < MainScreen />
     </div>
   );
 }
