@@ -1,19 +1,22 @@
 import React from "react";
-import "/Participant.css";
+import "./Participant.css";
 import { Card } from "../../Shared/Card/Card.component";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMicrophoneSlash } from "@fortawesome/free-solid-svg-icons";
 
-export const Participant = () => {
+export const Participant = ({ participant }) => {
 
     return(
         <div className="participant">
             <Card>
                 <video className="video" autoPlay playsInline></video>
                 <FontAwesomeIcon className="muted" icon={ faMicrophoneSlash } />
-                <div className="Avatar">A</div>
+                <div style={{ background: participant.avatarColor }} className="avatar">
+                    { participant.userName[0] }
+                </div>
                 <div className="name">
-                    Test User Name
+                    { participant.userName }
+                    { participant.currentUser ? " (you)" : "" }
                 </div>
             </Card>
         </div>
