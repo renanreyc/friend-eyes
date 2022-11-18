@@ -21,7 +21,7 @@ if(roomId) {
     dbRef = dbRef.child(roomId);
 }else {
     dbRef = dbRef.push();
-    window.history.replaceState(null, "Meet", "?id=" +dbRef.key);
+    window.history.replaceState(null, "Meet", "?id=" + dbRef.key);
 }
 
 export default dbRef;

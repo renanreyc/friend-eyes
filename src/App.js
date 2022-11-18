@@ -2,12 +2,20 @@ import dbRef, { connectedRef, userName } from './server/firebase';
 import './App.css';
 import { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { setUser, addParticipant, removeParticipant} from './store/actioncreator';
+import { setUser, addParticipant, removeParticipant, setUserStream} from './store/actioncreator';
 import { MainScreen } from './components/mainScreen/MainScreen.component';
 
 function App(props) {
   const participantRef = dbRef.child("participants");
+  
   useEffect(() => {
+    navigator.mediaDevices
+      .getUserMedia({ audio: true, video: true })
+      .then((mediaStream) => {
+        mediaStream.getVideoTracks()[0].enabled = false;
+        
+        props.setUserStream(mediaStream);
+    });
     connectedRef.on('value', (snap) => {
       if(snap.val()) {
         const defaultPreferences = {
@@ -66,6 +74,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    setUserStream: (stream) => dispatch(setUserStream(stream)),
     setUser: (user) => dispatch(setUser(user)),
     addParticipant: (participant) => dispatch(addParticipant(participant)),
     removeParticipant: (participantKey) => dispatch(removeParticipant(participantKey)),
