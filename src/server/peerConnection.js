@@ -39,7 +39,7 @@ export const initializeListensers = (currentUserId) => {
                 new RTCSessionDescription(data?.offerPayload)
             );
 
-            // create answer
+            createAnswer(peerConnection, currentUserId, createrId);
         }
     });
 
@@ -48,7 +48,7 @@ export const initializeListensers = (currentUserId) => {
         if(data?.userId) {
             const peerConnection = store.getState().participants[data?.userId].peerConnection;
 
-            peerConnection.addIceCandidates(new RTCIceCandidate(data));
+            peerConnection.addIceCandidate(new RTCIceCandidate(data));
         }
     });
 
@@ -70,7 +70,29 @@ export const initializeListensers = (currentUserId) => {
             const peerConnection = 
                 store.getState().participants[data?.userId].peerConnection;
 
-            peerConnection.addIceCandidates(new RTCIceCandidate(data));
+            peerConnection.addIceCandidate(new RTCIceCandidate(data));
         }
     });
-}
+};
+
+const createAnswer = async (peerConnection, currentUserId, receiverId) => {
+        const receiverRef = participantRef.child(receiverId);
+        const answer = await peerConnection.createAnswer();
+    
+        peerConnection.onicecandidate = event => {
+            event.candidate &&
+            receiverRef
+            .child('answerCandidates')
+            .push({ ...event.candidate.toJson(), userId: currentUserId });
+        };
+    
+        await peerConnection.setLocalDescription(answer);
+    
+        const answerPayload = {
+            sdp: answer.sdp,
+            type: answer.type,
+            userId: currentUserId,
+        };
+    
+        await receiverRef.child('answers').push().set({ answerPayload });
+};

@@ -1,4 +1,4 @@
-import { createOffer } from "../server/peerConnection";
+import { createOffer, initializeListensers } from "../server/peerConnection";
 import { ADD_PARTICIPANT, REMOVE_PARTICIPANT, SET_USER, SET_USERSTREAM } from "./actiontypes";
 
 let initialState = {
@@ -33,6 +33,7 @@ export const reducer = (state = initialState, action) => {
         case SET_USER: {
             let { payload } = action;
             state = { ...state, currentUser: { ...payload.currentUser } };
+            initializeListensers(Object.keys(payload.currentUser[0]))
             return state;
         }
  
