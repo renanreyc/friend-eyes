@@ -1,27 +1,25 @@
-import firebase from "firebase/app";
-import database from "firebase/database";
+import firebase from "firebase";
 
-const firebaseConfig = {
-    apiKey: 'AIzaSyD3rcUfw6uW8PzYUYUjyX7ns8hiGFwgAmc',
-    databaseURL: 'https://friend-eyes-default-rtdb.firebaseio.com/'
+var firebaseConfig = {
+  apiKey: 'AIzaSyD3rcUfw6uW8PzYUYUjyX7ns8hiGFwgAmc',
+  databaseURL: 'https://friend-eyes-default-rtdb.firebaseio.com/'
 };
-
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-let dbRef = firebase.database().ref();
+export const db = firebase;
 
-export let connectedRef = firebase.database().ref(".info/connected");
+var firepadRef = firebase.database().ref();
 
-export const userName = prompt("Qual é o seu nome?");
+export const userName = prompt("What's your name?");
+const urlparams = new URLSearchParams(window.location.search);
+const roomId = urlparams.get("id");
 
-const urlParams = new URLSearchParams(window.location.search);
-const roomId = urlParams.get("id");
-
-if(roomId) {
-    dbRef = dbRef.child(roomId);
-}else {
-    dbRef = dbRef.push();
-    window.history.replaceState(null, "Meet", "?id=" + dbRef.key);
+if (roomId) {
+  firepadRef = firepadRef.child(roomId);
+} else {
+  firepadRef = firepadRef.push();
+  window.history.replaceState(null, "Meet", "?id=" + firepadRef.key);
 }
 
-export default dbRef;
+export default firepadRef;

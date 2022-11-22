@@ -1,50 +1,49 @@
-import React, { useEffect, useRef } from "react";
-import "./Participant.css";
-import { Card } from "../../Shared/Card/Card.component";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React from "react";
+import Card from "../../Shared/Card/Card.component";
 import { faMicrophoneSlash } from "@fortawesome/free-solid-svg-icons";
-import { useSelector } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import "./Participant.css";
 
-export const Participant = ({ participant }) => {
-    const videoRef = useRef(null);
-
-    const userStream = useSelector((state) => state.mainStream)
-    const remoteStream = new MediaStream();
-
-    useEffect(() => {
-        if(participant.peerConnection) {
-            participant.peerConnection.ontrack = (event) => {
-                event.streams[0].getTracks().forEach(track => {
-                    remoteStream.addTrack(track);
-                });
-
-                videoRef.current.srcObject = remoteStream;
-            }
-        }
-
-    }, [participant.peerConnection]);
-
-    useEffect(() => {
-        if(userStream && participant.currentUser) {
-            videoRef.current.srcObject = userStream;
-            videoRef.current.muted = true;
-        }
-
-    }, [participant.currentUser, userStream]);
-
-    return(
-        <div className="participant">
-            <Card>
-                <video ref={videoRef} className="video" autoPlay playsInline></video>
-                <FontAwesomeIcon className="muted" icon={ faMicrophoneSlash } />
-                <div style={{ background: participant.avatarColor }} className="avatar">
-                    { participant.userName[0] }
-                </div>
-                <div className="name">
-                    { participant.userName }
-                    { participant.currentUser ? " (you)" : "" }
-                </div>
-            </Card>
+export const Participant = (props) => {
+  const {
+    curentIndex,
+    currentParticipant,
+    hideVideo,
+    videoRef,
+    showAvatar,
+    currentUser,
+  } = props;
+  if (!currentParticipant) return <></>;
+  return (
+    <div className={`participant ${hideVideo ? "hide" : ""}`}>
+      <Card>
+        <video
+          ref={videoRef}
+          className="video"
+          id={`participantVideo${curentIndex}`}
+          autoPlay
+          playsInline
+        ></video>
+        {!currentParticipant.audio && (
+          <FontAwesomeIcon
+            className="muted"
+            icon={faMicrophoneSlash}
+            title="Muted"
+          />
+        )}
+        {showAvatar && (
+          <div
+            style={{ background: currentParticipant.avatarColor }}
+            className="avatar"
+          >
+            {currentParticipant.name[0]}
+          </div>
+        )}
+        <div className="name">
+          {currentParticipant.name}
+          {currentUser ? "(You)" : ""}
         </div>
-    )
-}
+      </Card>
+    </div>
+  );
+};

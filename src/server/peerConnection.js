@@ -1,98 +1,96 @@
-import dbRef from "./firebase";
-import { store } from "..";
+import firepadRef from "./firebase";
+import { store } from "../index";
 
-const participantRef = dbRef.child("participants");
+const participantRef = firepadRef.child("participants");
 
-export const createOffer = async(peerConnection, createdId, receiverId) => {
-
-    const receiverRef = participantRef.child(receiverId);
-    const offer = await peerConnection.createOffer();
-
-    peerConnection.onicecandidate = event => {
-        event.candidate &&
-        receiverRef
-        .child('offerCandidates')
-        .push({ ...event.candidate.toJson(), userId: createdId });
-    };
-
-    await peerConnection.setLocalDescription(offer);
-
-    const offerPayload = {
-        sdp: offer.sdp,
-        type: offer.type,
-        userId: createdId,
-    };
-
-    await receiverRef.child('offers').push().set({ offerPayload });
+export const updatePreference = (userId, preference) => {
+  const currentParticipantRef = participantRef
+    .child(userId)
+    .child("preferences");
+  setTimeout(() => {
+    currentParticipantRef.update(preference);
+  });
 };
 
-export const initializeListensers = (currentUserId) => {
-    const receiverRef = participantRef.child(currentUserId);
+export const createOffer = async (peerConnection, receiverId, createdID) => {
+  const currentParticipantRef = participantRef.child(receiverId);
+  peerConnection.onicecandidate = (event) => {
+    event.candidate &&
+      currentParticipantRef
+        .child("offerCandidates")
+        .push({ ...event.candidate.toJSON(), userId: createdID });
+  };
 
-    receiverRef.child("offers").on("child_added", async (snapshot) => {
-        const data = snapshot.val();
-        if(data?.offerPayload) {
-            const createrId = data?.offerPayload.userId;
-            const peerConnection = store.getState().participants[createrId].peerConnection;
+  const offerDescription = await peerConnection.createOffer();
+  await peerConnection.setLocalDescription(offerDescription);
 
-            await peerConnection.setRemoteDescription(
-                new RTCSessionDescription(data?.offerPayload)
-            );
+  const offer = {
+    sdp: offerDescription.sdp,
+    type: offerDescription.type,
+    userId: createdID,
+  };
 
-            createAnswer(peerConnection, currentUserId, createrId);
-        }
-    });
-
-    receiverRef.child("offerCandidates").on("child_added", async (snapshot) => {
-        const data = snapshot.val();
-        if(data?.userId) {
-            const peerConnection = store.getState().participants[data?.userId].peerConnection;
-
-            peerConnection.addIceCandidate(new RTCIceCandidate(data));
-        }
-    });
-
-    receiverRef.child("answers").on("child_added", async (snapshot) => {
-        const data = snapshot.val();
-        if(data?.answerPayload) {
-            const createrId = data?.answerPayload.userId;
-            const peerConnection = store.getState().participants[createrId].peerConnection;
-
-            await peerConnection.setRemoteDescription(
-                new RTCSessionDescription(data?.answerPayload)
-            );
-        }
-    });
-
-    receiverRef.child("answerCandidates").on("child_added", async (snapshot) => {
-        const data = snapshot.val();
-        if(data?.userId) {
-            const peerConnection = 
-                store.getState().participants[data?.userId].peerConnection;
-
-            peerConnection.addIceCandidate(new RTCIceCandidate(data));
-        }
-    });
+  await currentParticipantRef.child("offers").push().set({ offer });
 };
 
-const createAnswer = async (peerConnection, currentUserId, receiverId) => {
-        const receiverRef = participantRef.child(receiverId);
-        const answer = await peerConnection.createAnswer();
-    
-        peerConnection.onicecandidate = event => {
-            event.candidate &&
-            receiverRef
-            .child('answerCandidates')
-            .push({ ...event.candidate.toJson(), userId: currentUserId });
-        };
-    
-        await peerConnection.setLocalDescription(answer);
-    
-        const answerPayload = {
-            sdp: answer.sdp,
-            type: answer.type,
-            userId: currentUserId,
-        };
-    
-        await receiverRef.child('answers').push().set({ answerPayload });
+export const initializeListensers = async (userId) => {
+  const currentUserRef = participantRef.child(userId);
+
+  currentUserRef.child("offers").on("child_added", async (snapshot) => {
+    const data = snapshot.val();
+    if (data?.offer) {
+      const pc =
+        store.getState().participants[data.offer.userId].peerConnection;
+      await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
+      await createAnswer(data.offer.userId, userId);
+    }
+  });
+
+  currentUserRef.child("offerCandidates").on("child_added", (snapshot) => {
+    const data = snapshot.val();
+    if (data.userId) {
+      const pc = store.getState().participants[data.userId].peerConnection;
+      pc.addIceCandidate(new RTCIceCandidate(data));
+    }
+  });
+
+  currentUserRef.child("answers").on("child_added", (snapshot) => {
+    const data = snapshot.val();
+    if (data?.answer) {
+      const pc =
+        store.getState().participants[data.answer.userId].peerConnection;
+      const answerDescription = new RTCSessionDescription(data.answer);
+      pc.setRemoteDescription(answerDescription);
+    }
+  });
+
+  currentUserRef.child("answerCandidates").on("child_added", (snapshot) => {
+    const data = snapshot.val();
+    if (data.userId) {
+      const pc = store.getState().participants[data.userId].peerConnection;
+      pc.addIceCandidate(new RTCIceCandidate(data));
+    }
+  });
+};
+
+const createAnswer = async (otherUserId, userId) => {
+  const pc = store.getState().participants[otherUserId].peerConnection;
+  const participantRef1 = participantRef.child(otherUserId);
+  pc.onicecandidate = (event) => {
+    event.candidate &&
+      participantRef1
+        .child("answerCandidates")
+        .push({ ...event.candidate.toJSON(), userId: userId });
+  };
+
+  const answerDescription = await pc.createAnswer();
+  await pc.setLocalDescription(answerDescription);
+
+  const answer = {
+    type: answerDescription.type,
+    sdp: answerDescription.sdp,
+    userId: userId,
+  };
+
+  await participantRef1.child("answers").push().set({ answer });
 };

@@ -1,53 +1,86 @@
-import dbRef, { connectedRef, userName } from './server/firebase';
-import './App.css';
-import { useEffect } from 'react';
-import { connect } from 'react-redux';
-import { setUser, addParticipant, removeParticipant, setUserStream} from './store/actioncreator';
-import { MainScreen } from './components/mainScreen/MainScreen.component';
+import MainScreen from "./components/mainScreen/MainScreen.component";
+import firepadRef, { db, userName } from "./server/firebase";
+import "./App.css";
+import { useEffect } from "react";
+import {
+  setMainStream,
+  addParticipant,
+  setUser,
+  removeParticipant,
+  updateParticipant,
+} from "./store/actioncreator";
+import { connect } from "react-redux";
 
 function App(props) {
-  const participantRef = dbRef.child("participants");
-  
+
+  const getUserStream = async () => {
+    const localStream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: true,
+    });
+
+    return localStream;
+  };
+
+  const getStream = async () => {
+    return await getUserStream();
+  }
   useEffect(() => {
-    navigator.mediaDevices
-      .getUserMedia({ audio: true, video: true })
-      .then((mediaStream) => {
-        mediaStream.getVideoTracks()[0].enabled = false;
-        
-        props.setUserStream(mediaStream);
-    });
-    connectedRef.on('value', (snap) => {
-      if(snap.val()) {
-        const defaultPreferences = {
-          audio: true,
-          video: false,   
-          screen: false,
-        }
-        const userRef = participantRef.push({
-          userName,
-          preference: defaultPreferences,
+    const stream = getStream().then(
+      (stream) => {
+        stream.getVideoTracks()[0].enabled = false;
+        props.setMainStream(stream);
+    
+        connectedRef.on("value", (snap) => {
+          if (snap.val()) {
+            const defaultPreference = {
+              audio: true,
+              video: false,
+              screen: false,
+            };
+            const userStatusRef = participantRef.push({
+              userName,
+              preferences: defaultPreference,
+            });
+            props.setUser({
+              [userStatusRef.key]: { name: userName, ...defaultPreference },
+            });
+            userStatusRef.onDisconnect().remove();
+          }
         });
-        
-        props.setUser({
-          [userRef.key]: {
-            userName,
-            ...defaultPreferences,
-          }, 
-        });
-        userRef.onDisconnect().remove();
       }
-    });
+    )
 
   }, []);
 
-  useEffect(() => {
+  const connectedRef = db.database().ref(".info/connected");
+  const participantRef = firepadRef.child("participants");
 
-    if(props.user){
+
+
+  const isUserSet = !!props.user;
+  const isStreamSet = !!props.stream;
+
+  useEffect(() => {
+    console.log("teste bool")
+    console.log(isStreamSet)
+    console.log(isUserSet)
+    if (isStreamSet && isUserSet) {
       participantRef.on("child_added", (snap) => {
-        const { userName, preferences } = snap.val();
+        const preferenceUpdateEvent = participantRef
+          .child(snap.key)
+          .child("preferences");
+        preferenceUpdateEvent.on("child_changed", (preferenceSnap) => {
+          props.updateParticipant({
+            [snap.key]: {
+              [preferenceSnap.key]: preferenceSnap.val(),
+            },
+          });
+        });
+        const { userName: name, preferences = {} } = snap.val();
         props.addParticipant({
           [snap.key]: {
-            userName,
+            name,
             ...preferences,
           },
         });
@@ -56,29 +89,30 @@ function App(props) {
         props.removeParticipant(snap.key);
       });
     }
+  }, [isStreamSet, isUserSet]);
 
-  }, [props.user]);
   return (
     <div className="App">
-      < MainScreen />
+      <MainScreen />
     </div>
   );
 }
 
 const mapStateToProps = (state) => {
   return {
+    stream: state.mainStream,
     user: state.currentUser,
-    participants: state.participants,
-  }  
-}
+  };
+};
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    setUserStream: (stream) => dispatch(setUserStream(stream)),
+    setMainStream: (stream) => dispatch(setMainStream(stream)),
+    addParticipant: (user) => dispatch(addParticipant(user)),
     setUser: (user) => dispatch(setUser(user)),
-    addParticipant: (participant) => dispatch(addParticipant(participant)),
-    removeParticipant: (participantKey) => dispatch(removeParticipant(participantKey)),
-  }
-}
+    removeParticipant: (userId) => dispatch(removeParticipant(userId)),
+    updateParticipant: (user) => dispatch(updateParticipant(user)),
+  };
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

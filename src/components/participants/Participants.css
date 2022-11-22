@@ -4,13 +4,17 @@
     grid-gap: 20px;
     height: 85vh;
     padding: 10px;
-    
     }
-
-@media (max-width: 800px) {
-    .participants {
+  
+  .participants img{
+      border-radius: 50%; 
+      height: 120px; 
+      width: 120px;
+    }
+  
+    @media (max-width: 800px) {
+      .participants {
         grid-template-columns: repeat(var(--grid-col-size), 1fr);
-        grid-template-columns: repeat(var(--grid-row-size), 1fr);
+        grid-template-rows: repeat(var(--grid-row-size), 1fr);
+      }
     }
-    
-}
