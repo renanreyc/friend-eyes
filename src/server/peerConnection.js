@@ -1,5 +1,5 @@
 import firepadRef from "./firebase";
-import { store } from "../index";
+import { store } from "../App";
 
 const participantRef = firepadRef.child("participants");
 
