@@ -2,6 +2,7 @@
 import { Home } from "./pages/Home";
 import { Registration } from "./pages/Registration";
 import { Navbar } from "./components/navbar/Navbar.component";
+import Header from "./components/header/Header.component";
 import Welcome from "./pages/Welcome";
 import Meet from "./pages/Meet";
 
@@ -16,9 +17,12 @@ export const store = createStore(userReducer);
 
 function App(props) {
   return (
-    <div className="App">
+    <>
+    
+    <div>
       <Router>
-        <Navbar />
+          <Header />
+        <div className="App">
          <Routes>
           <Route path="/" element={ 
             <Provider store={store}>
@@ -31,8 +35,12 @@ function App(props) {
           <Route path="/welcome" element={<Welcome />} />
     
         </Routes> 
+        </div>
+
       </Router>
     </div>
+    </>
+
   );
 }
 
