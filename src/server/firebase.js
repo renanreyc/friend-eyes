@@ -1,8 +1,11 @@
 import firebase from "firebase";
+import ambConfig  from '../ambConfig'
+
+
 
 var firebaseConfig = {
-  apiKey: 'AIzaSyD3rcUfw6uW8PzYUYUjyX7ns8hiGFwgAmc',
-  databaseURL: 'https://friend-eyes-default-rtdb.firebaseio.com/'
+  apiKey: ambConfig.apiKey,
+  databaseURL: ambConfig.databaseURL
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
