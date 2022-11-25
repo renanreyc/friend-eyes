@@ -1,12 +1,15 @@
 import './styles.css';
+import Img from "../../imgs/world.png"
 
 export function Home() {
     return (
-        <div className='container'>
-            <h1>Junte-se à família. Venha ver o mundo juntos.</h1>
-            <input type= "text" placeholder="Digite o nome..."/>
-            <button type="button">Eu preciso de assistência visual</button>
-            <button type="button">Eu gostaria de ser voluntário</button>
+        <div className='containerHome'>
+            
+            <img src= {Img} alt="Início Friend Eye"/>
+            <h1>João</h1>
+            <h3>membro desde 19/04/2022</h3>
+            <h4>Você irá receber uma notificação quando alguém precisar de sua ajuda.</h4>
+            <button type="button">Saiba como atender uma chamada</button>
         </div>
         
     )

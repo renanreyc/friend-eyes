@@ -20,6 +20,8 @@ img {
 }
 
 button {
+  width: 50%;
+  padding: 24px;
   font-weight: bold;
   font-size: 1.2rem;
   cursor: pointer;
@@ -40,3 +42,4 @@ button:hover {
     rgba(53, 81, 222, 1) 100%
   );
 }
+

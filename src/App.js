@@ -1,7 +1,6 @@
 
 import { Home } from "./pages/Home";
 import { Registration } from "./pages/Registration";
-import { Navbar } from "./components/navbar/Navbar.component";
 import Header from "./components/header/Header.component";
 import Welcome from "./pages/Welcome";
 import Meet from "./pages/Meet";

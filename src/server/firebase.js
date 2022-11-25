@@ -11,7 +11,8 @@ export const db = firebase;
 
 var firepadRef = firebase.database().ref();
 
-export const userName = prompt("What's your name?");
+// export const userName = prompt("What's your name?");
+export const userName = "Renan Rey";
 
 const urlparams = new URLSearchParams(window.location.search);
 // export const userName = urlparams.get("name");
