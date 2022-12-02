@@ -26,4 +26,4 @@ Adicionar os detalhes da sua configuração firebase para server/firebase.js
 Executar "npm run start" para iniciar a aplicação
 
 
-Desenvolvido  por Rafaela Cândito, Renan Rodrigues, Elionai Roberto e Mariana Ramos
+Desenvolvido  por Rafaela Cândido, Renan Rodrigues, Elioenai Roberto e Mariana Ramos
