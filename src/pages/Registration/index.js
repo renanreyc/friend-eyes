@@ -8,6 +8,8 @@ export function Registration() {
             <input type= "text" placeholder="Digite o nome..."/>
             <h3>E-mail</h3>
             <input type= "text" placeholder="email@email.com"/>
+            <h3>Senha</h3>
+            <input type= "text" placeholder="********"/>
             <h3>Telefone</h3>
             <input type= "text" placeholder="(00)00000-0000"/>
             <h3>Endereço</h3>

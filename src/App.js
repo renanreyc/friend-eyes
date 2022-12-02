@@ -4,6 +4,7 @@ import { Registration } from "./pages/Registration";
 import Header from "./components/header/Header.component";
 import Welcome from "./pages/Welcome";
 import Meet from "./pages/Meet";
+import { Login } from "./pages/Login"
 
 import { Provider } from "react-redux";
 import { createStore } from "redux";
@@ -30,6 +31,7 @@ function App(props) {
           } />
           
           <Route path="/home" element={<Home />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/registration" element={<Registration />} />
           <Route path="/welcome" element={<Welcome />} />
     

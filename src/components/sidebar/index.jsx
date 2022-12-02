@@ -28,12 +28,9 @@ const Sidebar = ({ active }) => {
         <SidebarItem Icon={FaAngellist} Text="Bem-vindo" Path="/welcome" />
         <SidebarItem Icon={FaHome} Text="Tela Principal" Path="home"/>
         <SidebarItem Icon={FaPen} Text="Cadastro" Path="registration"/>
+        <SidebarItem Icon={FaUserFriends} Text="Login" Path="login"/>
         <SidebarItem Icon={FaPhoneVolume} Text="Sala de Chamada" Path="/"/>
 
-        <SidebarItem Icon={FaUserFriends} Text="Friends eyes" />
-        <SidebarItem Icon={FaEnvelope} Text="E-mail" />
-        <SidebarItem Icon={FaRegFileAlt} Text="Reports" />
-        <SidebarItem Icon={FaRegSun} Text="Configurações" />
       </Content>
     </Container>
   )
